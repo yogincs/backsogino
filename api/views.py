@@ -29,17 +29,17 @@ def email(request):
 # ✅ SUGGESTION API
 class SuggestionCreateView(APIView):
     def post(self, request):
-        email = request.data.get('email') or request.POST.get('email')
+        email_data = request.data.get('email') or request.POST.get('email')
         message = request.data.get('message') or request.POST.get('message')
 
-        if not email or not message:
+        if not email_data or not message:
             return Response(
                 {'error': 'Email and message are required.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         try:
-            suggestion = Suggestion.objects.create(email=email, message=message)
+            suggestion = Suggestion.objects.create(email=email_data, message=message)
         except Exception as e:
             return Response(
                 {'error': str(e)},
@@ -54,7 +54,7 @@ class SuggestionCreateView(APIView):
         }, status=status.HTTP_201_CREATED)
 
 
-# ✅ LIST DATA (FIXED)
+# ✅ LIST DATA
 @api_view(['GET'])
 def list_data(request):
     subscribers = Subscriber.objects.all().values()
@@ -66,16 +66,16 @@ def list_data(request):
     })
 
 
-# ✅ SUBMIT DATA (EXTRA API)
+# ✅ SUBMIT DATA
 @api_view(['POST'])
 def submit_data(request):
-    email = request.data.get('email')
+    email_data = request.data.get('email')
     message = request.data.get('message')
 
-    if not email or not message:
+    if not email_data or not message:
         return Response({"error": "Email and message required"}, status=400)
 
-    suggestion = Suggestion.objects.create(email=email, message=message)
+    suggestion = Suggestion.objects.create(email=email_data, message=message)
 
     return Response({
         "success": True,
