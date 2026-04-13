@@ -6,12 +6,10 @@ from rest_framework.views import APIView
 from .models import Subscriber, Suggestion
 
 
+# ✅ EMAIL SUBSCRIBE
 @api_view(['POST'])
 def email(request):
     try:
-        print("DATA:", request.data)
-        print("POST:", request.POST)
-
         user_email = request.data.get('email') or request.POST.get('email')
 
         if not user_email:
@@ -28,11 +26,9 @@ def email(request):
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+# ✅ SUGGESTION API
 class SuggestionCreateView(APIView):
     def post(self, request):
-        print("DATA:", request.data)
-        print("POST:", request.POST)
-
         email = request.data.get('email') or request.POST.get('email')
         message = request.data.get('message') or request.POST.get('message')
 
@@ -56,3 +52,33 @@ class SuggestionCreateView(APIView):
             'email': suggestion.email,
             'message': suggestion.message,
         }, status=status.HTTP_201_CREATED)
+
+
+# ✅ LIST DATA (FIXED)
+@api_view(['GET'])
+def list_data(request):
+    subscribers = Subscriber.objects.all().values()
+    suggestions = Suggestion.objects.all().values()
+
+    return Response({
+        "subscribers": list(subscribers),
+        "suggestions": list(suggestions)
+    })
+
+
+# ✅ SUBMIT DATA (EXTRA API)
+@api_view(['POST'])
+def submit_data(request):
+    email = request.data.get('email')
+    message = request.data.get('message')
+
+    if not email or not message:
+        return Response({"error": "Email and message required"}, status=400)
+
+    suggestion = Suggestion.objects.create(email=email, message=message)
+
+    return Response({
+        "success": True,
+        "email": suggestion.email,
+        "message": suggestion.message
+    })
