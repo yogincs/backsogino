@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import email, SuggestionCreateView, submit_data
+from .views import email, SuggestionCreateView, submit_data, list_data
 
 urlpatterns = [
     path('email/', email),
